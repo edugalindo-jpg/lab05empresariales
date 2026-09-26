@@ -1,0 +1,206 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    :root {
+        --primary: #0f0f1a;
+        --primary-light: #1a1a2e;
+        --secondary: #16213e;
+        --accent: #e94560;
+        --accent-hover: #d63a55;
+        --gold: #f0c808;
+        --gold-dim: #d4ac07;
+        --text: #eaeaea;
+        --text-muted: #a0a0a0;
+        --card-bg: #1f1f3a;
+        --card-border: #2d2d4a;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%) !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+        color: var(--text) !important;
+    }
+
+    #header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%) !important;
+        border-bottom: 1px solid var(--card-border) !important;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    #branding h1 a, #branding h1 a:visited {
+        color: var(--text) !important;
+        background: linear-gradient(135deg, var(--text) 0%, var(--gold) 50%, var(--accent) 100%) !important;
+        -webkit-background-clip: text !important;
+        -webkit-text-fill-color: transparent !important;
+        background-clip: text !important;
+        font-weight: 700 !important;
+        font-size: 1.75rem !important;
+        text-decoration: none !important;
+    }
+
+    #branding h1 a:hover { color: var(--gold) !important; }
+
+    .module h2, .module caption, .inline-group h2 {
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%) !important;
+        color: var(--gold) !important;
+        border: 1px solid var(--card-border) !important;
+        border-radius: 8px 8px 0 0 !important;
+        font-weight: 600 !important;
+    }
+
+    .module, .inline-group {
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+        margin-bottom: 1.5rem !important;
+    }
+
+    .module h2, .module caption {
+        border-radius: 12px 12px 0 0 !important;
+        padding: 1rem 1.25rem !important;
+    }
+
+    .dashboard .module { margin-bottom: 1.5rem !important; }
+
+    table thead th {
+        background: var(--secondary) !important;
+        color: var(--gold) !important;
+        border-bottom: 2px solid var(--card-border) !important;
+        font-weight: 600 !important;
+        padding: 1rem !important;
+    }
+
+    table tbody tr {
+        border-bottom: 1px solid var(--card-border) !important;
+        transition: background 0.2s ease !important;
+    }
+
+    table tbody tr:hover {
+        background: rgba(233, 69, 96, 0.08) !important;
+    }
+
+    table tbody td {
+        padding: 0.85rem 1rem !important;
+        border: none !important;
+        color: var(--text) !important;
+    }
+
+    a { color: var(--accent) !important; }
+    a:hover { color: var(--gold) !important; }
+
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: linear-gradient(135deg, var(--accent) 0%, #c73659 100%) !important;
+        border: none !important;
+        color: white !important;
+        border-radius: 8px !important;
+        padding: 0.6rem 1.25rem !important;
+        font-weight: 600 !important;
+        font-family: inherit !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 8px rgba(233, 69, 96, 0.3) !important;
+    }
+
+    .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(233, 69, 96, 0.5) !important;
+        background: linear-gradient(135deg, var(--accent-hover) 0%, #b0314e 100%) !important;
+    }
+
+    .button.default, input[type=submit].default {
+        background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dim) 100%) !important;
+        color: var(--primary) !important;
+        box-shadow: 0 2px 8px rgba(240, 200, 8, 0.3) !important;
+    }
+
+    .button.default:hover, input[type=submit].default:hover {
+        box-shadow: 0 6px 20px rgba(240, 200, 8, 0.5) !important;
+    }
+
+    .delete-link, a.deletelink {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
+        box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3) !important;
+    }
+
+    .delete-link:hover, a.deletelink:hover {
+        box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5) !important;
+    }
+
+    #user-tools {
+        background: rgba(255, 255, 255, 0.03) !important;
+        border-radius: 8px !important;
+        padding: 0.5rem 1rem !important;
+    }
+
+    #user-tools a { color: var(--text-muted) !important; }
+    #user-tools a:hover { color: var(--gold) !important; }
+
+    .breadcrumbs {
+        background: transparent !important;
+        padding: 1rem 0 !important;
+    }
+
+    .breadcrumbs a { color: var(--text-muted) !important; }
+    .breadcrumbs a:hover { color: var(--gold) !important; }
+
+    .paginator { background: transparent !important; }
+
+    .action-counter { background: var(--secondary) !important; color: var(--gold) !important; border-radius: 6px !important; }
+
+    select, input[type=text], input[type=email], input[type=password], input[type=number], input[type=url], textarea {
+        background: var(--primary) !important;
+        border: 1px solid var(--card-border) !important;
+        color: var(--text) !important;
+        border-radius: 6px !important;
+        padding: 0.6rem 0.85rem !important;
+    }
+
+    select:focus, input[type=text]:focus, input[type=email]:focus, input[type=password]:focus, input[type=number]:focus, input[type=url]:focus, textarea:focus {
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 3px rgba(233, 69, 96, 0.2) !important;
+        outline: none !important;
+    }
+
+    .form-row label, .form-row .label { color: var(--text) !important; font-weight: 500 !important; }
+    .help { color: var(--text-muted) !important; }
+
+    .inline-group .tabular th { background: var(--secondary) !important; color: var(--gold) !important; }
+    .inline-group .tabular td { border-color: var(--card-border) !important; }
+
+    .changelist-filter {
+        background: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .changelist-filter h2 { background: var(--secondary) !important; color: var(--gold) !important; border-radius: 12px 12px 0 0 !important; }
+    .changelist-filter h3 { color: var(--gold) !important; }
+    .changelist-filter ul li a { color: var(--text) !important; }
+    .changelist-filter ul li a:hover, .changelist-filter ul li.selected a { color: var(--accent) !important; background: rgba(233, 69, 96, 0.1) !important; }
+
+    #changelist-filter ul li a { color: var(--text) !important; }
+    #changelist-filter ul li a:hover { color: var(--accent) !important; }
+
+    .results { background: transparent !important; }
+    .results a { color: var(--accent) !important; }
+
+    .paginator a, .paginator span { border-color: var(--card-border) !important; background: var(--card-bg) !important; color: var(--text) !important; }
+    .paginator a:hover { background: var(--accent) !important; border-color: var(--accent) !important; color: white !important; }
+    .paginator .this-page { background: var(--accent) !important; border-color: var(--accent) !important; color: white !important; }
+
+    .action-select { background: var(--primary) !important; border-color: var(--card-border) !important; color: var(--text) !important; }
+
+    .msg { border-radius: 8px !important; border: none !important; }
+    .success { background: rgba(34, 197, 94, 0.2) !important; border: 1px solid rgba(34, 197, 94, 0.3) !important; color: #86efac !important; }
+    .error { background: rgba(239, 68, 68, 0.2) !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; color: #fca5a5 !important; }
+    .warning { background: rgba(240, 200, 8, 0.2) !important; border: 1px solid rgba(240, 200, 8, 0.3) !important; color: var(--gold) !important; }
+    .info { background: rgba(59, 130, 246, 0.2) !important; border: 1px solid rgba(59, 130, 246, 0.3) !important; color: #93c5fd !important; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
