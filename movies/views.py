@@ -1,6 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Avg
 from .models import Movie, Rating
+
+
+def home(request):
+    """Página de inicio: redirige al admin o lista películas."""
+    return redirect('admin:index')
 
 
 def movie_recommendation(request, movie_id):
