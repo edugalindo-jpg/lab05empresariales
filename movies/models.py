@@ -1,95 +1,109 @@
-import os
-import requests
 from django.db import models
 from django.conf import settings
-from django.core.files.base import ContentFile
-from django.utils.text import slugify
+from django.utils.safestring import mark_safe
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField("Nombre", max_length=100, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
+        verbose_name = "Género"
+        verbose_name_plural = "Géneros"
 
     def __str__(self):
         return self.name
 
 
 class Person(models.Model):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    birth_date = models.DateField(null=True, blank=True)
+    ROLE_CHOICES = [
+        ("director", "Director"),
+        ("actor", "Actor"),
+        ("writer", "Guionista"),
+        ("producer", "Productor"),
+    ]
+    name = models.CharField("Nombre", max_length=200)
+    role = models.CharField("Rol", max_length=20, choices=ROLE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['last_name', 'first_name']
+        ordering = ["name"]
+        verbose_name = "Persona"
+        verbose_name_plural = "Personas"
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        return f"{self.name} ({self.get_role_display()})"
 
 
 class Movie(models.Model):
-    title = models.CharField(max_length=200)
-    synopsis = models.TextField(blank=True)
-    release_year = models.PositiveIntegerField()
-    duration = models.PositiveIntegerField(help_text="Duración en minutos")
-    genres = models.ManyToManyField(Genre, related_name='movies', blank=True)
-    director = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, related_name='directed_movies')
-    actors = models.ManyToManyField(Person, related_name='acted_movies', blank=True)
-    poster = models.ImageField(upload_to='movies/posters/', null=True, blank=True)
-    poster_url = models.URLField(max_length=500, blank=True, help_text="URL de la imagen del póster")
+    title = models.CharField("Título", max_length=200)
+    year = models.PositiveIntegerField("Año")
+    image = models.ImageField("Carátula", upload_to="movies/covers/", blank=True, null=True)
+    genres = models.ManyToManyField(Genre, related_name="movies", blank=True, verbose_name="Géneros")
+    people = models.ManyToManyField(Person, related_name="movies", blank=True, verbose_name="Personas")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-release_year', 'title']
+        ordering = ["-year", "title"]
+        verbose_name = "Película"
+        verbose_name_plural = "Películas"
 
     def __str__(self):
-        return f"{self.title} ({self.release_year})"
+        return f"{self.title} ({self.year})"
 
-    def fetch_poster_from_url(self, url=None):
-        """Descarga la imagen desde una URL y la guarda en el campo poster."""
-        image_url = url or self.poster_url
-        if not image_url:
-            return False
+    def has_image(self):
+        return bool(self.image and hasattr(self.image, 'url'))
 
-        try:
-            response = requests.get(image_url, timeout=10)
-            response.raise_for_status()
+    def image_url(self):
+        if self.has_image():
+            try:
+                return self.image.url
+            except (ValueError, AttributeError):
+                return None
+        return None
 
-            # Determinar extensión
-            content_type = response.headers.get('content-type', '')
-            ext = '.jpg'
-            if 'png' in content_type:
-                ext = '.png'
-            elif 'webp' in content_type:
-                ext = '.webp'
-            elif 'jpeg' in content_type or 'jpg' in content_type:
-                ext = '.jpg'
+    def image_tag_admin_list(self):
+        url = self.image_url()
+        if url:
+            return mark_safe(
+                f'<img src="{url}" width="60" height="90" '
+                f'style="object-fit:cover;border-radius:4px;border:1px solid #ddd;" loading="lazy" />'
+            )
+        return mark_safe('<span style="color:#999;font-size:0.8rem;">Sin carátula</span>')
+    image_tag_admin_list.short_description = "Carátula"
 
-            filename = f"{slugify(self.title)}-poster{ext}"
-            self.poster.save(filename, ContentFile(response.content), save=True)
-            return True
-        except Exception as e:
-            print(f"Error descargando imagen: {e}")
-            return False
+    def image_tag_admin_form(self):
+        url = self.image_url()
+        if url:
+            return mark_safe(
+                f'<img src="{url}" width="200" height="300" '
+                f'style="object-fit:cover;border-radius:8px;border:1px solid #ccc;box-shadow:0 2px 8px rgba(0,0,0,0.1);" loading="lazy" />'
+            )
+        return mark_safe(
+            '<div style="width:200px;height:300px;background:#f5f5f5;border:2px dashed #ddd;'
+            'border-radius:8px;display:flex;align-items:center;justify-content:center;color:#999;font-size:0.85rem;">'
+            'Sin carátula</div>'
+        )
+    image_tag_admin_form.short_description = "Vista previa"
 
 
 class Rating(models.Model):
-    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name='ratings')
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ratings')
-    score = models.PositiveSmallIntegerField(help_text="Puntuación del 1 al 10")
-    comment = models.TextField(blank=True)
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="ratings", verbose_name="Película")
+    score = models.PositiveSmallIntegerField("Puntuación", help_text="1-10")
+    comment = models.TextField("Comentario", blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="ratings")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
-        unique_together = ['movie', 'user']
+        ordering = ["-created_at"]
+        verbose_name = "Valoración"
+        verbose_name_plural = "Valoraciones"
+        unique_together = ["movie", "user"]
 
     def __str__(self):
         return f"{self.movie.title} - {self.user.username}: {self.score}/10"

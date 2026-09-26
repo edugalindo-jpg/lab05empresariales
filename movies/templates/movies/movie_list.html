@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Películas</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg: #0f0f1a; --card: #1a1a2e; --border: #2d2d4a;
+            --text: #eaeaea; --muted: #a0a0a0; --accent: #e94560; --gold: #f0c808;
+        }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.6; }
+        .container { max-width: 1300px; margin: 0 auto; padding: 2rem 1.5rem; }
+        header { text-align: center; padding: 2rem 0; border-bottom: 1px solid var(--border); margin-bottom: 2rem; }
+        h1 { font-size: clamp(2rem, 5vw, 3rem); background: linear-gradient(135deg, #fff, #f0c808); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 2rem 0 3rem; }
+        .stat { background: #1a1a2e; border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; text-align: center; }
+        .stat-value { font-size: 2rem; font-weight: 700; color: #f0c808; }
+        .stat-label { color: #888; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .filters { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; padding: 1rem; background: #1a1a2e; border: 1px solid var(--border); border-radius: 12px; }
+        .filters select, .filters input { background: #0f0f1a; border: 1px solid var(--border); color: #fff; padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.9rem; }
+        .filters input[type=text] { flex: 1; min-width: 200px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.5rem; }
+        .card { background: #1a1a2e; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,.4); border-color: #e94560; }
+        .card-img { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #111; }
+        .card-body { padding: 1rem; }
+        .card-title { font-weight: 600; font-size: 1rem; margin-bottom: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: .8rem; color: #888; margin-bottom: .75rem; }
+        .genre-tag { background: rgba(233,69,96,.15); color: #e94560; padding: .15rem .5rem; border-radius: 999px; font-size: .65rem; margin-right: .3rem; display: inline-block; }
+        .score { display: inline-flex; align-items: center; gap: .3rem; background: rgba(240,200,8,.2); color: #f0c808; padding: .3rem .7rem; border-radius: 999px; font-weight: 700; font-size: .85rem; border: 1px solid rgba(240,200,8,.3); }
+        .placeholder { width: 100%; aspect-ratio: 2/3; background: linear-gradient(135deg, #111, #1a1a2e); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: .75rem; }
+        .placeholder svg { width: 48px; height: 48px; opacity: .4; margin-bottom: .5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Catálogo de Películas</h1>
+            <p style="color:#888;margin-top:.5rem;">{{ movies|length }} películas disponibles</p>
+        </header>
+
+        <div class="filters">
+            <form method="get">
+                <input type="text" name="q" placeholder="Buscar título, director, actor..." value="{{ query|default:'' }}">
+                <select name="genre">
+                    <option value="">Todos los géneros</option>
+                    {% for g in genres %}
+                        <option value="{{ g.id }}" {% if g.id|stringformat:"s" == current_genre|stringformat:"s" %}selected{% endif %}>{{ g.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="year">
+                    <option value="">Todos los años</option>
+                    {% for y in years %}
+                        <option value="{{ y }}" {% if y|stringformat:"s" == current_year|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" style="background:#e94560;color:#fff;border:none;padding:.6rem 1.2rem;border-radius:8px;font-weight:600;cursor:pointer;">Filtrar</button>
+                {% if query or current_genre or current_year %}
+                    <a href="?" style="align-self:flex-end;color:#888;text-decoration:none;font-size:.9rem;">Limpiar</a>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="grid">
+            {% for movie in movies %}
+                <article class="card">
+                    <a href="{% url 'movies:movie_recommendation' movie.id %}" style="text-decoration:none;color:inherit;">
+                        {% if movie.image %}
+                            <img src="{{ movie.image.url }}" alt="{{ movie.title }}" class="card-img" loading="lazy">
+                        {% else %}
+                            <div class="placeholder" aria-label="Sin carátula">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:.5rem;opacity:.4;">
+                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21 15 16 10 5 21"/>
+                                </svg>
+                                <span>Sin carátula</span>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h3 class="card-title">{{ movie.title }}</h3>
+                            <div class="card-meta">{{ movie.year }}</div>
+                            <div>
+                                {% for g in movie.genres.all|slice:":3" %}
+                                    <span class="genre-tag">{{ g.name }}</span>
+                                {% endfor %}
+                            </div>
+                            <div style="margin-top:.75rem;">
+                                {% if movie.avg_score is not None %}
+                                    <span class="score">★ {{ movie.avg_score|floatformat:1 }}</span>
+                                {% else %}
+                                    <span style="color:#666;font-size:.8rem;">Sin valorar</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                </article>
+            {% empty %}
+                <div style="grid-column:1/-1;text-align:center;padding:4rem;color:#666;">
+                    <p style="font-size:1.2rem;">No se encontraron películas</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

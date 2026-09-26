@@ -4,726 +4,90 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recomendaciones para {{ movie.title }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #1a1a2e;
-            --primary-light: #16213e;
-            --accent: #e94560;
-            --accent-hover: #d63a55;
-            --gold: #f0c808;
-            --gold-dim: #d4ac07;
-            --text: #eaeaea;
-            --text-muted: #a0a0a0;
-            --card-bg: #1f1f3a;
-            --card-border: #2d2d4a;
-            --bg-gradient: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .background-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(233, 69, 96, 0.15), transparent),
-                radial-gradient(circle at 20% 80%, rgba(240, 200, 8, 0.08), transparent);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-        }
-
-        /* Header */
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--card-border);
-            position: relative;
-        }
-
-        .page-header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--gold));
-            border-radius: 2px;
-        }
-
-        .page-title {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--text) 0%, var(--gold) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .page-subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            font-weight: 400;
-        }
-
-        /* Main Movie Card */
-        .main-movie {
-            background: linear-gradient(145deg, var(--card-bg) 0%, var(--primary-light) 100%);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 2.5rem;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 
-                0 10px 40px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-
-        .main-movie::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--gold));
-        }
-
-        .main-movie-content {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        .main-poster {
-            width: 160px;
-            height: 240px;
-            object-fit: cover;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            border: 2px solid var(--gold);
-            flex-shrink: 0;
-        }
-
-        .main-poster-placeholder {
-            width: 160px;
-            height: 240px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border: 2px dashed var(--card-border);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            text-align: center;
-            padding: 1rem;
-            flex-shrink: 0;
-        }
-
-        .main-info {
-            flex: 1;
-        }
-
-        .main-title {
-            font-size: clamp(1.75rem, 4vw, 2.5rem);
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-            line-height: 1.2;
-        }
-
-        .main-year {
-            display: inline-block;
-            background: rgba(233, 69, 96, 0.2);
-            color: var(--accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .main-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .meta-icon {
-            color: var(--gold);
-        }
-
-        .genres-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .genre-tag {
-            background: rgba(240, 200, 8, 0.15);
-            color: var(--gold);
-            padding: 0.35rem 0.85rem;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            border: 1px solid rgba(240, 200, 8, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .genre-tag:hover {
-            background: rgba(240, 200, 8, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .main-synopsis {
-            color: var(--text-muted);
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-
-        /* Recommendations Section */
-        .recommendations-section {
-            margin-top: 1rem;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 24px;
-            background: linear-gradient(180deg, var(--accent), var(--gold));
-            border-radius: 2px;
-        }
-
-        .recommendations-count {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .recommendations-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1.5rem;
-        }
-
-        /* Movie Card */
-        .movie-card {
-            background: linear-gradient(145deg, var(--card-bg) 0%, var(--primary-light) 100%);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .movie-card:hover {
-            transform: translateY(-8px);
-            border-color: var(--accent);
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px var(--accent);
-        }
-
-        .movie-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--gold));
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .movie-card:hover::before {
-            opacity: 1;
-        }
-
-        .card-poster {
-            width: 100%;
-            aspect-ratio: 2/3;
-            object-fit: cover;
-            background: var(--primary);
-        }
-
-        .card-poster-placeholder {
-            width: 100%;
-            aspect-ratio: 2/3;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            text-align: center;
-            padding: 1rem;
-        }
-
-        .card-content {
-            padding: 1.25rem;
-        }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .card-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .card-genres {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.35rem;
-        }
-
-        .card-genre {
-            background: rgba(233, 69, 96, 0.15);
-            color: var(--accent);
-            padding: 0.2rem 0.6rem;
-            border-radius: 100px;
-            font-size: 0.65rem;
-            font-weight: 500;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--card-border);
-        }
-
-        .card-score {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: linear-gradient(135deg, rgba(240, 200, 8, 0.2) 0%, rgba(240, 200, 8, 0.1) 100%);
-            padding: 0.4rem 0.85rem;
-            border-radius: 100px;
-            border: 1px solid rgba(240, 200, 8, 0.3);
-        }
-
-        .score-star {
-            color: var(--gold);
-            font-size: 1rem;
-        }
-
-        .score-value {
-            font-weight: 700;
-            color: var(--gold);
-            font-size: 0.95rem;
-        }
-
-        .card-director {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 60%;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(145deg, var(--card-bg) 0%, var(--primary-light) 100%);
-            border: 1px solid var(--card-border);
-            border-radius: 20px;
-        }
-
-        .empty-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        .empty-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-text {
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 100px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent) 0%, #c73659 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(233, 69, 96, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text);
-            border: 1px solid var(--card-border);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: var(--accent);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-in {
-            animation: fadeInUp 0.6s ease forwards;
-        }
-
-        .delay-1 { animation-delay: 0.1s; opacity: 0; }
-        .delay-2 { animation-delay: 0.2s; opacity: 0; }
-        .delay-3 { animation-delay: 0.3s; opacity: 0; }
-        .delay-4 { animation-delay: 0.4s; opacity: 0; }
-        .delay-5 { animation-delay: 0.5s; opacity: 0; }
-        .delay-6 { animation-delay: 0.6s; opacity: 0; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .main-movie-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .main-poster,
-            .main-poster-placeholder {
-                margin: 0 auto;
-            }
-
-            .main-meta {
-                justify-content: center;
-            }
-
-            .genres-container {
-                justify-content: center;
-            }
-
-            .card-footer {
-                flex-direction: column;
-                gap: 0.75rem;
-                text-align: center;
-            }
-
-            .card-director {
-                max-width: 100%;
-            }
-
-            .recommendations-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 1.5rem 1rem;
-            }
-
-            .main-movie {
-                padding: 1.5rem;
-            }
-
-            .recommendations-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--primary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--card-border);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent);
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root { --bg:#0f0f1a; --card:#1a1a2e; --border:#2d2d4a; --text:#eaeaea; --muted:#a0a0a0; --accent:#e94560; --gold:#f0c808; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem 1.5rem; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+        h1 { font-size: clamp(1.8rem, 4vw, 2.5rem); background: linear-gradient(135deg, #fff, #f0c808); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .main { display: grid; grid-template-columns: 200px 1fr; gap: 2rem; margin-bottom: 3rem; background: #1a1a2e; border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; align-items: start; }
+        .main-img { width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 12px; border: 2px solid var(--gold); }
+        .main-placeholder { width: 100%; aspect-ratio: 2/3; background: linear-gradient(135deg, #111, #1a1a2e); border: 2px dashed var(--border); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #666; font-size: .8rem; text-align: center; padding: 1rem; }
+        h2 { font-size: 1.3rem; margin-bottom: 1.5rem; }
+        .genres { display: flex; gap: .5rem; flex-wrap: wrap; margin: 1rem 0; }
+        .tag { background: rgba(233,69,96,.15); color: #e94560; padding: .25rem .75rem; border-radius: 999px; font-size: .8rem; }
+        .rec-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1.25rem; }
+        .r-card { background: #1a1a2e; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: transform .2s, box-shadow .2s; }
+        .r-card:hover { transform: translateY(-6px); border-color: #e94560; box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+        .r-img { width: 100%; aspect-ratio: 2/3; object-fit: cover; background: #111; }
+        .r-placeholder { width: 100%; aspect-ratio: 2/3; background: linear-gradient(135deg, #111, #1a1a2e); display: flex; align-items: center; justify-content: center; color: #555; font-size: .75rem; }
+        .r-body { padding: 1rem; }
+        .r-title { font-weight: 600; font-size: .95rem; margin-bottom: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .r-meta { font-size: .75rem; color: #888; margin-bottom: .75rem; }
+        .r-score { display: inline-flex; align-items: center; gap: .3rem; background: rgba(240,200,8,.2); color: #f0c808; padding: .25rem .6rem; border-radius: 999px; font-weight: 700; font-size: .8rem; border: 1px solid rgba(240,200,8,.3); }
     </style>
 </head>
 <body>
-    <div class="background-pattern"></div>
     <div class="container">
-        <!-- Header -->
-        <header class="page-header animate-in">
-            <h1 class="page-title">Recomendaciones para</h1>
-            <p class="page-subtitle">Películas similares basadas en género y valoraciones</p>
+        <header class="header">
+            <h1>Recomendaciones para</h1>
+            <h2 style="font-weight:400;color:#888;margin-top:.5rem;">{{ movie.title }} ({{ movie.year }})</h2>
         </header>
 
-        <!-- Main Movie -->
-        <article class="main-movie animate-in delay-1">
-            <div class="main-movie-content">
-                {% if movie.poster %}
-                    <img src="{{ movie.poster.url }}" alt="{{ movie.title }}" class="main-poster" loading="lazy">
-                {% else %}
-                    <div class="main-poster-placeholder">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.5rem; opacity: 0.5;">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                            <polyline points="21 15 16 10 5 21"></polyline>
-                        </svg>
-                        <span>Sin póster</span>
-                    </div>
-                {% endif %}
-
-                <div class="main-info">
-                    <h2 class="main-title">{{ movie.title }}</h2>
-                    <span class="main-year">{{ movie.release_year }}</span>
-
-                    <div class="main-meta">
-                        {% if movie.duration %}
-                        <span class="meta-item">
-                            <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
-                            {{ movie.duration }} min
-                        </span>
-                        {% endif %}
-                        {% if movie.director %}
-                        <span class="meta-item">
-                            <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                            Dir. {{ movie.director }}
-                        </span>
-                        {% endif %}
-                    </div>
-
-                    <div class="genres-container">
-                        {% for genre in movie.genres.all %}
-                            <span class="genre-tag">{{ genre.name }}</span>
-                        {% empty %}
-                            <span class="genre-tag" style="background: rgba(160,160,160,0.15); color: var(--text-muted); border-color: rgba(160,160,160,0.3);">
-                                Sin géneros
-                            </span>
-                        {% endfor %}
-                    </div>
-
-                    {% if movie.synopsis %}
-                        <p class="main-synopsis">{{ movie.synopsis }}</p>
-                    {% endif %}
+        <article class="main">
+            {% if movie.image %}
+                <img src="{{ movie.image.url }}" alt="{{ movie.title }}" class="main-img" loading="lazy">
+            {% else %}
+                <div class="main-placeholder" aria-label="Sin carátula">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:.75rem;opacity:.5;">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <span>Sin carátula</span>
+                </div>
+            {% endif %}
+            <div>
+                <h2>{{ movie.title }} ({{ movie.year }})</h2>
+                <div class="genres">
+                    {% for g in movie.genres.all %}
+                        <span class="tag">{{ g.name }}</span>
+                    {% empty %}
+                        <span class="tag" style="background:rgba(160,160,160,.15);color:#888;">Sin géneros</span>
+                    {% endfor %}
                 </div>
             </div>
         </article>
 
-        <!-- Recommendations -->
-        <section class="recommendations-section animate-in delay-2">
-            <div class="section-header">
-                <h2 class="section-title">
-                    Películas recomendadas
-                    <span class="recommendations-count">{{ recommendations|length }} encontradas</span>
-                </h2>
-            </div>
+        <h2 style="margin-bottom:1.5rem;">Películas recomendadas (mismo género, mejor valoradas)</h2>
 
-            {% if recommendations %}
-                <div class="recommendations-grid">
-                    {% for rec in recommendations %}
-                        <article class="movie-card animate-in" style="animation-delay: calc(0.2s + {{ forloop.counter0 }} * 0.05s);">
-                            {% if rec.poster %}
-                                <img src="{{ rec.poster.url }}" alt="{{ rec.title }}" class="card-poster" loading="lazy">
+        {% if recommendations %}
+            <div class="rec-grid">
+                {% for rec in recommendations %}
+                    <article class="r-card">
+                        <a href="#" style="text-decoration:none;color:inherit;">
+                            {% if rec.image %}
+                                <img src="{{ rec.image.url }}" alt="{{ rec.title }}" class="r-img" loading="lazy">
                             {% else %}
-                                <div class="card-poster-placeholder">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.5rem; opacity: 0.4;">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                        <polyline points="21 15 16 10 5 21"></polyline>
-                                    </svg>
-                                </div>
+                                <div class="r-placeholder" aria-label="Sin carátula">🎬</div>
                             {% endif %}
-
-                            <div class="card-content">
-                                <h3 class="card-title">{{ rec.title }}</h3>
-
-                                <div class="card-meta">
-                                    <span>{{ rec.release_year }}</span>
-                                    {% if rec.duration %}
-                                        <span>· {{ rec.duration }} min</span>
-                                    {% endif %}
-                                </div>
-
-                                <div class="card-genres">
+                            <div class="r-body">
+                                <h3 class="r-title">{{ rec.title }} ({{ rec.year }})</h3>
+                                <div class="r-meta">
                                     {% for g in rec.genres.all|slice:":3" %}
-                                        <span class="card-genre">{{ g.name }}</span>
+                                        <span class="tag" style="font-size:.65rem;padding:.15rem .5rem;">{{ g.name }}</span>
                                     {% endfor %}
-                                    {% if rec.genres.all|length > 3 %}
-                                        <span class="card-genre" style="background: rgba(160,160,160,0.15); color: var(--text-muted);">+{{ rec.genres.all|length|add:"-3" }}</span>
-                                    {% endif %}
                                 </div>
+                                <div class="r-score">★ {{ rec.avg_score|floatformat:1 }}</div>
                             </div>
-
-                            <div class="card-footer">
-                                <div class="card-score">
-                                    <svg class="score-star" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-                                    </svg>
-                                    <span class="score-value">{{ rec.avg_score|floatformat:1 }}</span>
-                                </div>
-                                {% if rec.director %}
-                                    <span class="card-director">Dir. {{ rec.director }}</span>
-                                {% endif %}
-                            </div>
-                        </article>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div class="empty-state animate-in">
-                    <div class="empty-icon">🎬</div>
-                    <h3 class="empty-title">Sin recomendaciones</h3>
-                    <p class="empty-text">Esta película no tiene géneros asignados o no hay otras películas con géneros compartidos que tengan valoraciones.</p>
-                    <a href="/admin/" class="btn btn-primary">Gestionar películas</a>
-                </div>
-            {% endif %}
-        </section>
-
-        <!-- Footer Action -->
-        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--card-border); animate-in delay-3">
-            <a href="/admin/" class="btn btn-secondary">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <path d="M8 21h8"></path>
-                    <path d="M12 17v4"></path>
-                </svg>
-                Panel de administración
-            </a>
-        </div>
+                        </a>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p style="color:#888;text-align:center;padding:3rem;">No hay recomendaciones disponibles.</p>
+        {% endif %}
     </div>
-
-    <script>
-        // Intersection Observer for scroll animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.animate-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Add subtle parallax to background
-        document.addEventListener('mousemove', (e) => {
-            const pattern = document.querySelector('.background-pattern');
-            if (pattern) {
-                const x = (e.clientX / window.innerWidth - 0.5) * 20;
-                const y = (e.clientY / window.innerHeight - 0.5) * 20;
-                pattern.style.transform = `translate(${x}px, ${y}px)`;
-            }
-        });
-    </script>
 </body>
 </html>
